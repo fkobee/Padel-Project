@@ -31,3 +31,4 @@ C:\Users\franc\OneDrive\Escritorio\Proyectos\RankingPadelAPI\obj\Debug\net8.0\re
 C:\Users\franc\OneDrive\Escritorio\Proyectos\RankingPadelAPI\obj\Debug\net8.0\RankingPadelAPI.pdb
 C:\Users\franc\OneDrive\Escritorio\Proyectos\RankingPadelAPI\obj\Debug\net8.0\RankingPadelAPI.genruntimeconfig.cache
 C:\Users\franc\OneDrive\Escritorio\Proyectos\RankingPadelAPI\obj\Debug\net8.0\ref\RankingPadelAPI.dll
+C:\Users\franc\OneDrive\Escritorio\Proyectos\RankingPadelAPI\obj\Debug\net8.0\RankingPadelAPI.sourcelink.json
