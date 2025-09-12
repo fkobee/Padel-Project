@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RankingPadelAPI.Models;
-using RankingPadelAPI.Data;
-using Microsoft.EntityFrameworkCore;
+using Services;
 
 namespace RankingPadelAPI.Services
 {
-  public class JugadoresService
+  public class JugadoresService : IJugadoresService
   {
     private readonly ApplicationDbContext _context;
 

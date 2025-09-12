@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj": {}
+    "c:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj": {
+    "c:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj",
+        "projectUniqueName": "c:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj",
         "projectName": "RankingPadelAPI",
-        "projectPath": "C:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj",
+        "projectPath": "c:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\RankingPadelAPI.csproj",
         "packagesPath": "C:\\Users\\franc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\obj\\",
+        "outputPath": "c:\\Users\\franc\\OneDrive\\Escritorio\\Proyectos\\RankingPadelAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\franc\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -48,6 +48,10 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.6, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.9, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
