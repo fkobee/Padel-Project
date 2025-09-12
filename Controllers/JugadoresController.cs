@@ -20,9 +20,7 @@ namespace RankingPadelAPI.Controllers
         [HttpPost]
         public ActionResult<Jugador> Post(Jugador jugador)
         {
-            jugador.Id = jugadores.Count + 1;
-            jugadores.Add(jugador);
-            return jugador;
+            
         }
 
         // POST: api/jugadores/partido?ganadorId=1&perdedorId=2
