@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RankingPadelAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e01fb6feee1d5b515370fefd93b11d79f0efe0a1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3386411c19897679e032028e5c867d2157b4c71c")]
 [assembly: System.Reflection.AssemblyProductAttribute("RankingPadelAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RankingPadelAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

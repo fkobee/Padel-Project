@@ -1,7 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace RankingPadelAPI.Models
+namespace RankingPadelAPI
 {
   public class Jugador
   {

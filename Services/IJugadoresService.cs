@@ -5,7 +5,7 @@ namespace RankingPadelAPI.Services
     public interface IJugadorService
     {
         Task<IEnumerable<Jugador>> GetJugadoresAsync();
-        Task<Jugador> AddJugadorAsync(Jugador jugador);
-        Task RegistrarPartidoAsync(int ganadorId, int perdedorId);
+        Task<Jugador> AddJugadorAsync(CreateJugadorArgs args);
+        Task RegistrarPartidoAsync(RegisterPartidoArgs args);
     }
 }
