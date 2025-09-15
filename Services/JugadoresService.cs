@@ -4,11 +4,11 @@ using RankingPadelAPI.Models;
 
 namespace RankingPadelAPI.Services
 {
-    public class JugadorService : IJugadorService
+    public class JugadoresService : IJugadorService
     {
         private readonly ApplicationDbContext _context;
 
-        public JugadorService(ApplicationDbContext context)
+        public JugadoresService(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -36,7 +36,7 @@ namespace RankingPadelAPI.Services
                 throw new Exception("Jugador no encontrado");
 
             ganador.Puntos += 3;
-            
+
             await _context.SaveChangesAsync();
         }
     }

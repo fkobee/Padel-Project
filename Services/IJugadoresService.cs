@@ -1,4 +1,4 @@
-using RankingPadelAPI.Models;
+using RankingPadelAPI.Domain.Arguments;
 
 namespace RankingPadelAPI.Services
 {

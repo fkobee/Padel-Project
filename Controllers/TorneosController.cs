@@ -1,69 +1,67 @@
 using Microsoft.AspNetCore.Mvc;
-using RankingPadelAPI.Models;
-using RankingPadelAPI.Data;
+using RankingPadelAPI.Services;
+using RankingPadelAPI.DTOs;
 
-namespace RankingPadelAPI.Controllers
+namespace RankingPadelAPI.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class TorneosController : ControllerBase
 {
-  [ApiController]
-  [Route("api/[controller]")]
-  public class TorneosController : ControllerBase
-  {
-    private readonly ApplicationDbContext _context;
+    private readonly ITorneosService _torneosService;
 
-    public TorneosController(ApplicationDbContext context)
+    public TorneosController(ITorneosService torneosService)
     {
-      _context = context;
+        _torneosService = torneosService;
     }
 
     [HttpGet]
-    public IActionResult GetTorneos()
+    public async Task<ActionResult<IEnumerable<TorneoDto>>> GetTorneos()
     {
-      var torneos = _context.Torneos.ToList();
-      return Ok(torneos);
+        var torneos = await _torneosService.GetAllAsync();
+        var dto = torneos.Select(t => new TorneoDto
+        {
+            Id = t.Id,
+            Nombre = t.Nombre,
+            Fecha = t.Fecha,
+            Ubicacion = t.Ubicacion
+        });
+        return Ok(dto);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetTorneo(int id)
+    public async Task<ActionResult<TorneoDto>> GetTorneo(int id)
     {
-      var torneo = _context.Torneos.Find(id);
-      if (torneo == null)
-        return NotFound();
-      return Ok(torneo);
+        var torneo = await _torneosService.GetByIdAsync(id);
+        if (torneo == null) return NotFound();
+
+        return Ok(new TorneoDto
+        {
+            Id = torneo.Id,
+            Nombre = torneo.Nombre,
+            Fecha = torneo.Fecha,
+            Ubicacion = torneo.Ubicacion
+        });
     }
 
     [HttpPost]
-    public IActionResult CreateTorneo([FromBody] Torneo torneo)
+    public async Task<ActionResult<TorneoDto>> CreateTorneo([FromBody] CrearTorneoDto dto)
     {
-      _context.Torneos.Add(torneo);
-      _context.SaveChanges();
-      return CreatedAtAction(nameof(GetTorneo), new { id = torneo.Id }, torneo);
+        var torneo = new Models.Torneo
+        {
+            Nombre = dto.Nombre,
+            Fecha = dto.Fecha,
+            Ubicacion = dto.Ubicacion
+        };
+
+        var creado = await _torneosService.CreateAsync(torneo);
+
+        return CreatedAtAction(nameof(GetTorneo), new { id = creado.Id }, new TorneoDto
+        {
+            Id = creado.Id,
+            Nombre = creado.Nombre,
+            Fecha = creado.Fecha,
+            Ubicacion = creado.Ubicacion
+        });
     }
-
-    [HttpPut("{id}")]
-    public IActionResult UpdateTorneo(int id, [FromBody] Torneo torneo)
-    {
-      var existing = _context.Torneos.Find(id);
-      if (existing == null)
-        return NotFound();
-
-      existing.Nombre = torneo.Nombre;
-      existing.Fecha = torneo.Fecha;
-      existing.Ubicacion = torneo.Ubicacion;
-
-      _context.SaveChanges();
-      return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public IActionResult DeleteTorneo(int id)
-    {
-      var torneo = _context.Torneos.Find(id);
-      if (torneo == null)
-        return NotFound();
-
-      _context.Torneos.Remove(torneo);
-      _context.SaveChanges();
-      return NoContent();
-    }
-  }
 }

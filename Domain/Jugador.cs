@@ -1,5 +1,5 @@
 
-namespace RankingPadelAPI
+namespace RankingPadelAPI.Domain
 {
   public class Jugador
   {

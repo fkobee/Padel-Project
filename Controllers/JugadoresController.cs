@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using RankingPadelAPI.Models;
 using RankingPadelAPI.Services;
+using RankingPadelAPI.DTOs;
 
 namespace RankingPadelAPI.Controllers;
 
 [ApiController]
-[Route("jugadores")]
-public sealed class JugadoresController : ControllerBase
+[Route("api/[controller]")]
+public class JugadoresController : ControllerBase
 {
     private readonly IJugadorService _jugadorService;
 
@@ -16,17 +16,36 @@ public sealed class JugadoresController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Jugador>>> Get()
+    public async Task<ActionResult<IEnumerable<JugadorDto>>> Get()
     {
         var jugadores = await _jugadorService.GetJugadoresAsync();
-        return Ok(jugadores);
+        var dto = jugadores.Select(j => new JugadorDto
+        {
+            Id = j.Id,
+            Nombre = j.Nombre,
+            Puntos = j.Puntos
+        });
+        return Ok(dto);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Jugador>> Post(Jugador jugador)
+    public async Task<ActionResult<JugadorDto>> Post([FromBody] CrearJugadorDto dto)
     {
+        var jugador = new Models.Jugador
+        {
+            Nombre = dto.Nombre,
+            FotoUrl = dto.FotoUrl,
+            Puntos = 0
+        };
+
         var nuevoJugador = await _jugadorService.AddJugadorAsync(jugador);
-        return Ok(nuevoJugador);
+
+        return Ok(new JugadorDto
+        {
+            Id = nuevoJugador.Id,
+            Nombre = nuevoJugador.Nombre,
+            Puntos = nuevoJugador.Puntos
+        });
     }
 
     [HttpPost("partido")]
