@@ -1,10 +1,10 @@
 namespace RankingPadelAPI.Models
 {
-    public class Jugador
+    public class Torneo 
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
-        public int Puntos { get; set; } = 0;
-        public float Foto { get; set; } = 0;
+        public DateTime Fecha { get; set; }
+        public string Ubicacion { get; set; } = string.Empty;
     }
 }
