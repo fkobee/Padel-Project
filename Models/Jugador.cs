@@ -5,5 +5,6 @@ namespace RankingPadelAPI.Models
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public int Puntos { get; set; } = 0;
+        public float Foto { get; set; } = 0;
     }
 }

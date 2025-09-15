@@ -36,8 +36,7 @@ namespace RankingPadelAPI.Services
                 throw new Exception("Jugador no encontrado");
 
             ganador.Puntos += 3;
-            perdedor.Puntos += 1;
-
+            
             await _context.SaveChangesAsync();
         }
     }

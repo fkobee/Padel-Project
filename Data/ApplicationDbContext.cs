@@ -8,4 +8,5 @@ public sealed class ApplicationDbContext : DbContext
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
   public DbSet<Jugador> Jugadores { get; set; }
+  public DbSet<Torneo> Torneos { get; set; }
 }
