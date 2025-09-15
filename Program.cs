@@ -1,6 +1,7 @@
 
 using RankingPadelAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using RankingPadelAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IJugadorService, JugadorService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

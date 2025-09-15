@@ -1,15 +1,11 @@
-namespace Services
-{
-  using RankingPadelAPI.Models;
-  using System.Collections.Generic;
-  using System.Threading.Tasks;
+using RankingPadelAPI.Models;
 
-  public interface IJugadoresService
-  {
-    Task<List<Jugador>> GetAllAsync();
-    Task<Jugador?> GetByIdAsync(int id);
-    Task<Jugador> AddAsync(Jugador jugador);
-    Task<bool> UpdateAsync(Jugador jugador);
-    Task<bool> DeleteAsync(int id);
-  }
+namespace RankingPadelAPI.Services
+{
+    public interface IJugadorService
+    {
+        Task<IEnumerable<Jugador>> GetJugadoresAsync();
+        Task<Jugador> AddJugadorAsync(Jugador jugador);
+        Task RegistrarPartidoAsync(int ganadorId, int perdedorId);
+    }
 }

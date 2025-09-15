@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RankingPadelAPI.Models;
 
-namespace RankingPadelAPI;
+namespace RankingPadelAPI.Data;
 
 public sealed class ApplicationDbContext : DbContext
 {

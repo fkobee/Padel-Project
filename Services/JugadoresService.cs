@@ -1,54 +1,44 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using RankingPadelAPI.Data;
 using RankingPadelAPI.Models;
-using Services;
 
 namespace RankingPadelAPI.Services
 {
-  public class JugadoresService : IJugadoresService
-  {
-    private readonly ApplicationDbContext _context;
-
-    public JugadoresService(ApplicationDbContext context)
+    public class JugadorService : IJugadorService
     {
-      _context = context;
+        private readonly ApplicationDbContext _context;
+
+        public JugadorService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Jugador>> GetJugadoresAsync()
+        {
+            return await _context.Jugadores
+                .OrderByDescending(j => j.Puntos)
+                .ToListAsync();
+        }
+
+        public async Task<Jugador> AddJugadorAsync(Jugador jugador)
+        {
+            _context.Jugadores.Add(jugador);
+            await _context.SaveChangesAsync();
+            return jugador;
+        }
+
+        public async Task RegistrarPartidoAsync(int ganadorId, int perdedorId)
+        {
+            var ganador = await _context.Jugadores.FindAsync(ganadorId);
+            var perdedor = await _context.Jugadores.FindAsync(perdedorId);
+
+            if (ganador == null || perdedor == null)
+                throw new Exception("Jugador no encontrado");
+
+            ganador.Puntos += 3;
+            perdedor.Puntos += 1;
+
+            await _context.SaveChangesAsync();
+        }
     }
-
-    public async Task<List<Jugador>> GetAllAsync()
-    {
-      return await _context.Jugadores.ToListAsync();
-    }
-
-    public async Task<Jugador?> GetByIdAsync(int id)
-    {
-      return await _context.Jugadores.FindAsync(id);
-    }
-
-    public async Task<Jugador> AddAsync(Jugador jugador)
-    {
-      _context.Jugadores.Add(jugador);
-      await _context.SaveChangesAsync();
-      return jugador;
-    }
-
-    public async Task<bool> UpdateAsync(Jugador jugador)
-    {
-      var existing = await _context.Jugadores.FindAsync(jugador.Id);
-      if (existing == null) return false;
-
-      _context.Entry(existing).CurrentValues.SetValues(jugador);
-      await _context.SaveChangesAsync();
-      return true;
-    }
-
-    public async Task<bool> DeleteAsync(int id)
-    {
-      var jugador = await _context.Jugadores.FindAsync(id);
-      if (jugador == null) return false;
-
-      _context.Jugadores.Remove(jugador);
-      await _context.SaveChangesAsync();
-      return true;
-    }
-  }
 }

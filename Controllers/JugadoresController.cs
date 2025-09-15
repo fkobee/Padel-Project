@@ -1,42 +1,45 @@
 using Microsoft.AspNetCore.Mvc;
 using RankingPadelAPI.Models;
+using RankingPadelAPI.Services;
 
-namespace RankingPadelAPI.Controllers
+namespace RankingPadelAPI.Controllers;
+
+[ApiController]
+[Route("jugadores")]
+public sealed class JugadoresController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class JugadoresController : ControllerBase
+    private readonly IJugadorService _jugadorService;
+
+    public JugadoresController(IJugadorService jugadorService)
     {
-        private static List<Jugador> jugadores = new();
+        _jugadorService = jugadorService;
+    }
 
-        // GET: api/jugadores
-        [HttpGet]
-        public ActionResult<IEnumerable<Jugador>> Get()
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Jugador>>> Get()
+    {
+        var jugadores = await _jugadorService.GetJugadoresAsync();
+        return Ok(jugadores);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Jugador>> Post(Jugador jugador)
+    {
+        var nuevoJugador = await _jugadorService.AddJugadorAsync(jugador);
+        return Ok(nuevoJugador);
+    }
+
+    [HttpPost("partido")]
+    public async Task<ActionResult> RegistrarPartido(int ganadorId, int perdedorId)
+    {
+        try
         {
-            return jugadores.OrderByDescending(j => j.Puntos).ToList();
+            await _jugadorService.RegistrarPartidoAsync(ganadorId, perdedorId);
+            return Ok("Partido registrado");
         }
-
-        // POST: api/jugadores
-        [HttpPost]
-        public ActionResult<Jugador> Post(Jugador jugador)
+        catch (Exception ex)
         {
-            
-        }
-
-        // POST: api/jugadores/partido?ganadorId=1&perdedorId=2
-        [HttpPost("partido")]
-        public ActionResult RegistrarPartido(int ganadorId, int perdedorId)
-        {
-            var ganador = jugadores.FirstOrDefault(j => j.Id == ganadorId);
-            var perdedor = jugadores.FirstOrDefault(j => j.Id == perdedorId);
-
-            if (ganador == null || perdedor == null)
-                return NotFound("Jugador no encontrado");
-
-            ganador.Puntos += 3;   // puntos por ganar
-            perdedor.Puntos += 1;   // puntos por participar/perder
-
-            return Ok(new { Mensaje = "Partido registrado", Ganador = ganador, Perdedor = perdedor });
+            return NotFound(ex.Message);
         }
     }
 }
