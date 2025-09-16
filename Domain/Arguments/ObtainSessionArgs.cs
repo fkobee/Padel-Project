@@ -1,4 +1,4 @@
-namespace RankingPadelAPI.Domain;
+namespace RankingPadelAPI.Domain.Arguments;
 public sealed record class ObtainSessionArgs
 {
     public readonly string Email;

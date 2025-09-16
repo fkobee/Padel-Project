@@ -1,3 +1,4 @@
+using RankingPadelAPI.Domain;
 using RankingPadelAPI.Domain.Arguments;
 
 namespace RankingPadelAPI.Services

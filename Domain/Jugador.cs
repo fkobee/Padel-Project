@@ -1,6 +1,5 @@
 
-namespace RankingPadelAPI.Domain
-{
+namespace RankingPadelAPI.Domain;
   public class Jugador
   {
     public int Id { get; set; }
@@ -9,4 +8,3 @@ namespace RankingPadelAPI.Domain
     public string Foto { get; set; } = string.Empty;
     public string Pala { get; set; } = string.Empty;
     }
-}

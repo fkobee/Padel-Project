@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using RankingPadelAPI.Services;
-using RankingPadelAPI.DTOs;
+using RankingPadelAPI.Domain;
 
 namespace RankingPadelAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("jugadores")]
 public class JugadoresController : ControllerBase
 {
     private readonly IJugadorService _jugadorService;

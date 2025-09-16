@@ -5,13 +5,11 @@ using RankingPadelAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-// Configurar EF Core con SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -20,10 +18,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IJugadorService, JugadorService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+
+builder.Services.AddScoped<IJugadorRepository, JugadorRepository>();
+builder.Services.AddScoped<IJugadorService, JugadorService>();
+
+builder.Services.AddScoped<ITorneoRepository, TorneoRepository>();
+builder.Services.AddScoped<ITorneosService, TorneosService>();
+
+builder.Services.AddScoped<IPartidoRepository, PartidoRepository>();
+builder.Services.AddScoped<IPartidoService, PartidoService>();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

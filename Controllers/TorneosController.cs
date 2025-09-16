@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using RankingPadelAPI.Services;
-using RankingPadelAPI.DTOs;
+using RankingPadelAPI.Domain.Arguments;
+using RankingPadelAPI.Domain;
 
 namespace RankingPadelAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("torneos")]
 public class TorneosController : ControllerBase
 {
     private readonly ITorneosService _torneosService;
@@ -16,9 +17,9 @@ public class TorneosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TorneoDto>>> GetTorneos()
+    public ActionResult<IEnumerable<TorneoDto>> GetTorneos()
     {
-        var torneos = await _torneosService.GetAllAsync();
+        var torneos = _torneosService.GetAllTorneos();
         var dto = torneos.Select(t => new TorneoDto
         {
             Id = t.Id,
@@ -32,7 +33,7 @@ public class TorneosController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<TorneoDto>> GetTorneo(int id)
     {
-        var torneo = await _torneosService.GetByIdAsync(id);
+        var torneo = _torneosService.GetTorneoById(id);
         if (torneo == null) return NotFound();
 
         return Ok(new TorneoDto
@@ -45,23 +46,18 @@ public class TorneosController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TorneoDto>> CreateTorneo([FromBody] CrearTorneoDto dto)
+    public IActionResult CreateTorneo([FromBody] CreateTorneoDto dto)
     {
-        var torneo = new Models.Torneo
+        var torneo = new Torneo
         {
             Nombre = dto.Nombre,
-            Fecha = dto.Fecha,
+            Fecha = dto.FechaInicio,
             Ubicacion = dto.Ubicacion
         };
+        _torneosService.AddTorneo(torneo);
 
-        var creado = await _torneosService.CreateAsync(torneo);
-
-        return CreatedAtAction(nameof(GetTorneo), new { id = creado.Id }, new TorneoDto
-        {
-            Id = creado.Id,
-            Nombre = creado.Nombre,
-            Fecha = creado.Fecha,
-            Ubicacion = creado.Ubicacion
-        });
+        return CreatedAtAction(nameof(GetTorneo), new { id = torneo.Id },
+        new CreateTorneoResponse(torneo.Id, torneo.Nombre, torneo.Fecha));
     }
+
 }

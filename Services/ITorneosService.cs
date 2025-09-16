@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using RankingPadelAPI.Models;
+using RankingPadelAPI.Domain;
 
 namespace RankingPadelAPI.Services
 {
@@ -8,7 +8,7 @@ namespace RankingPadelAPI.Services
     IEnumerable<Torneo> GetAllTorneos();
     Torneo GetTorneoById(int id);
     void AddTorneo(Torneo torneo);
-    void UpdateTorneo(int id, Torneo torneo);
+    void UpdateTorneo(Torneo torneo);
     void DeleteTorneo(int id);
   }
 }
