@@ -1,14 +1,15 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using RankingPadelAPI.Data;
 using RankingPadelAPI.Domain;
+using RankingPadelAPI.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace RankingPadelAPI.Repositories
 {
   public class TorneoRepository : ITorneoRepository
   {
-    private readonly RankingPadelDbContext _context;
+    private readonly ApplicationDbContext _context;
 
-    public TorneoRepository(RankingPadelDbContext context)
+    public TorneoRepository(ApplicationDbContext context)
     {
       _context = context;
     }

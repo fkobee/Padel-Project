@@ -1,9 +1,8 @@
 using RankingPadelAPI.Domain;
 using RankingPadelAPI.Repositories;
 
-namespace RankingPadelAPI.Services
-{
-  public class PartidoService
+namespace RankingPadelAPI.Services;
+  public class PartidoService : IPartidoService
   {
     private readonly IPartidoRepository _partidoRepository;
 
@@ -12,31 +11,29 @@ namespace RankingPadelAPI.Services
       _partidoRepository = partidoRepository;
     }
 
-    public async Task<IEnumerable<Partido>> GetAllAsync()
+    public IEnumerable<Partido> GetAll()
     {
-      return await _partidoRepository.GetAllAsync();
+      return _partidoRepository.GetAllAsync().Result;
     }
 
-    public async Task<Partido> GetByIdAsync(int id)
+    public Partido GetById(int id)
     {
-      return await _partidoRepository.GetByIdAsync(id);
+      return _partidoRepository.GetByIdAsync(id).Result;
     }
 
-    public async Task<Partido> CreateAsync(Partido partido)
+    public void Add(Partido partido)
     {
-      await _partidoRepository.AddAsync(partido);
-      return partido;
+      _partidoRepository.AddAsync(partido);
     }
 
-    public async Task<bool> UpdateAsync(Partido partido)
+    public void Update(Partido partido)
     {
-      await _partidoRepository.UpdateAsync(partido);
-      return true;
+      _partidoRepository.UpdateAsync(partido);
     }
 
-    public async Task DeleteAsync(int id)
+    public void Delete(int id)
     {
-      await _partidoRepository.DeleteAsync(id);
+      _partidoRepository.DeleteAsync(id);
     }
-  }
+
 }

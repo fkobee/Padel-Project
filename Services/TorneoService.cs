@@ -5,9 +5,9 @@ namespace RankingPadelAPI.Services
 {
     public class TorneoService : ITorneosService
     {
-        private readonly ITorneosRepository _torneosRepository;
+        private readonly ITorneoRepository _torneosRepository;
 
-        public TorneoService(ITorneosRepository torneosRepository)
+        public TorneoService(ITorneoRepository torneosRepository)
         {
             _torneosRepository = torneosRepository;
         }

@@ -34,8 +34,8 @@ namespace RankingPadelAPI.Controllers
     [HttpPost]
     public ActionResult<Partido> Create(Partido partido)
     {
-      var created = _partidoService.Create(partido);
-      return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+      _partidoService.Add(partido);
+      return Ok(partido);
     }
 
     [HttpPut("{id}")]
@@ -44,20 +44,22 @@ namespace RankingPadelAPI.Controllers
       if (id != partido.Id)
         return BadRequest();
 
-      var updated = _partidoService.Update(id, partido);
-      if (updated == null)
+      var partidoExistente = _partidoService.GetById(id);
+      if (partidoExistente == null)
         return NotFound();
 
+      _partidoService.Update(partido);
       return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-      var deleted = _partidoService.Delete(id);
-      if (!deleted)
+      var partidoExistente = _partidoService.GetById(id);
+      if (partidoExistente == null)
         return NotFound();
 
+      _partidoService.Delete(id);
       return NoContent();
     }
   }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RankingPadelAPI.Services;
-using RankingPadelAPI.Domain;
+using RankingPadelAPI.Domain.Arguments;
 
 namespace RankingPadelAPI.Controllers;
 
@@ -29,14 +29,9 @@ public class JugadoresController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<JugadorDto>> Post([FromBody] CrearJugadorDto dto)
+    public async Task<ActionResult<JugadorDto>> Post([FromBody] CreateJugadorArgs dto)
     {
-        var jugador = new Models.Jugador
-        {
-            Nombre = dto.Nombre,
-            FotoUrl = dto.FotoUrl,
-            Puntos = 0
-        };
+        var jugador = new CreateJugadorArgs(dto.Nombre, dto.FotoUrl, dto.Pala);
 
         var nuevoJugador = await _jugadorService.AddJugadorAsync(jugador);
 
@@ -49,11 +44,11 @@ public class JugadoresController : ControllerBase
     }
 
     [HttpPost("partido")]
-    public async Task<ActionResult> RegistrarPartido(int ganadorId, int perdedorId)
+    public async Task<ActionResult> RegistrarPartido(RegisterPartidoArgs args)
     {
         try
         {
-            await _jugadorService.RegistrarPartidoAsync(ganadorId, perdedorId);
+            await _jugadorService.RegistrarPartidoAsync(args);
             return Ok("Partido registrado");
         }
         catch (Exception ex)

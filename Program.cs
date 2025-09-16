@@ -2,6 +2,8 @@
 using RankingPadelAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using RankingPadelAPI.Services;
+using RankingPadelAPI.Repositories;
+using RankingPadelAPI.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,11 +26,12 @@ builder.Services.AddScoped<IJugadorRepository, JugadorRepository>();
 builder.Services.AddScoped<IJugadorService, JugadorService>();
 
 builder.Services.AddScoped<ITorneoRepository, TorneoRepository>();
-builder.Services.AddScoped<ITorneosService, TorneosService>();
+builder.Services.AddScoped<ITorneosService, TorneoService>();
 
 builder.Services.AddScoped<IPartidoRepository, PartidoRepository>();
 builder.Services.AddScoped<IPartidoService, PartidoService>();
 
+builder.Services.AddScoped<UserRepository>();
 
 var app = builder.Build();
 

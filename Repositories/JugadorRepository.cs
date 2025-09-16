@@ -1,4 +1,6 @@
+using RankingPadelAPI.Data;
 using RankingPadelAPI.Domain;
+using Microsoft.EntityFrameworkCore;
 namespace RankingPadelAPI.Repositories;
 public class JugadorRepository : IJugadorRepository
 {
