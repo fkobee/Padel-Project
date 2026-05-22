@@ -529,7 +529,7 @@ These are the most relevant findings drawn directly from the Gold layer. The dat
 
 ## 10. Design Decisions & Assumptions
 
-This section documents the **non-obvious choices** made during the project, with the rationale for each. These are the points to discuss during the defense.
+This section documents the **non-obvious choices** made during the project, with the rationale for each.
 
 ### Bronze Layer
 
