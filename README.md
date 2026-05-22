@@ -305,8 +305,6 @@ Open `powerbi/dashboard.pbix` in **PowerBI Desktop**. If you need to reconfigure
 | Username | `qversity-admin` |
 | Password | `qversity-admin` |
 
-PowerBI may prompt for the **Npgsql** driver the first time — install it from the official Microsoft documentation.
-
 ### Useful dbt Commands (Optional, for Debugging)
 
 ```bash
