@@ -43,7 +43,7 @@ Ingests a raw JSON dataset from AWS S3, transforms it through a **Bronze → Sil
 
 ### Business Context
 
-**Qversity** is a fictional Fintech/Banking company operating across seven LATAM countries: **Colombia (CO), Uruguay (UY), Argentina (AR), Mexico (MX), Chile (CL), Peru (PE), and Brazil (BR)**.
+The client is a fictional Fintech/Banking company operating across seven LATAM countries: **Colombia (CO), Uruguay (UY), Argentina (AR), Mexico (MX), Chile (CL), Peru (PE), and Brazil (BR)**.
 
 The source dataset contains **5,000 customer records**, each enriched with nested arrays of accounts, transactions, and loans, plus credit profile and digital engagement information. The business needs a unified analytics platform to answer **24 strategic questions** spanning revenue and profitability, risk and credit, customer demographics, transaction patterns, digital engagement, and product mix.
 
