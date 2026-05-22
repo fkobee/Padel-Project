@@ -219,9 +219,9 @@ cd qversity-data-2026-montevideo-FrancoCaceres
 
 The repository ships with `env.example`. Copy it to `.env`:
 
-\`\`\`bash
+```bash
 cp env.example .env
-\`\`\`
+```
 
 All variables have working default values — no modification needed:
 
