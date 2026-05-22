@@ -425,7 +425,7 @@ The script `spark/flatten_bronze.py` runs inside the Airflow container and bridg
 
 ### Why PySpark?
 
-The project explicitly mandates PySpark for nested array flattening. While PostgreSQL itself could handle this dataset with SQL, PySpark provides a scalable and idiomatic way to process JSON arrays that would generalize to much larger volumes.
+The project explicitly mandates PySpark for nested array flattening. PySpark is the industry standard for distributed JSON processing. While this dataset fits comfortably in memory, PySpark's array explosion and window functions express the flattening and deduplication logic far more clearly than SQL would, and the same code would scale to terabytes without changes.
 
 ### Reading from Bronze
 
@@ -524,7 +524,7 @@ These are the most relevant findings drawn directly from the Gold layer. The dat
 ### Risk & Credit
 
 - **Delinquency rate is ~50% across all segments** (48.9% SME → 49.9% private banking). The lack of meaningful differentiation between segments is a hallmark of the synthetic dataset; in a real scenario it would warrant urgent investigation into segmentation criteria.
-- **`poor` is the dominant credit score bucket**: 1,733 customers (~35%), followed by `fair` (495), `good` (455), `unknown` (389), `very_good` (353), and `exceptional` (331).
+- **`poor` is the dominant credit score bucket among customers with loans**: 1,733 customers (~46%), followed by `fair` (495), `good` (455), `unknown` (389), `very_good` (353), and `exceptional` (331). Note: `gold_risk_credit` only includes the 3,756 customers who have at least one loan.
 - The 389 `unknown` customers correspond to records where `credit_score` was outside the valid 300–850 range and was set to NULL — see EDA findings below.
 
 ### Customer Engagement
