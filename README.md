@@ -468,6 +468,8 @@ Each DataFrame is written to PostgreSQL via JDBC in **`overwrite`** mode, mirror
 
 The dashboard has **four pages**, each connected directly to the `gold` schema in PostgreSQL. Every page provides slicers (filters) for `country`, `customer_segment`, and other context-relevant dimensions, so any KPI can be sliced interactively. All amounts are shown in **USD** for cross-country comparability.
 
+**The 4 pages together answer all 24 business questions.**
+
 ### Page 1 — Executive Overview
 
 **What it shows.** High-level KPIs (Total Customers, Assets Under Management, Active Customers, KYC Verified Rate); customer count by country and city (with drill-down); monthly acquisition trend; customer status and KYC distributions; average revenue per customer by segment.
@@ -475,6 +477,8 @@ The dashboard has **four pages**, each connected directly to the `gold` schema i
 **Business questions answered.** Q1 (avg revenue per customer by segment), Q10 (customer count by country/city), Q12 (acquisition trend), Q13 (status breakdown), Q14 (KYC status).
 
 **Decisions it supports.** Strategic overview of the customer base health, acquisition cadence, and segment-level value distribution.
+
+![Page 1 — Executive Overview](powerbi/screenshots/ExecutiveOverview.png)
 
 ### Page 2 — Revenue & Transactions
 
@@ -484,6 +488,8 @@ The dashboard has **four pages**, each connected directly to the `gold` schema i
 
 **Decisions it supports.** Channel investment priorities, category-level revenue analysis, identification of failure hotspots, cross-border activity monitoring.
 
+![Page 2 — Revenue & Transactions](powerbi/screenshots/Revenue&Transactions.png)
+
 ### Page 3 — Risk & Credit
 
 **What it shows.** Loan delinquency rate by segment; credit score distribution by country; utilization vs delinquency scatter plot; days past due distribution by loan type; loan portfolio composition (outstanding USD by type and status); interest income by loan type; customer risk segmentation.
@@ -491,6 +497,8 @@ The dashboard has **four pages**, each connected directly to the `gold` schema i
 **Business questions answered.** Q4 (interest income by loan type), Q5 (delinquency rate by segment), Q6 (credit score by country), Q7 (utilization vs delinquency), Q8 (days past due by loan type), Q9 (risk segmentation), Q23 (loan portfolio composition).
 
 **Decisions it supports.** Credit risk policy adjustment, portfolio rebalancing, identification of delinquency drivers and concentrations.
+
+![Page 3 — Risk & Credit](powerbi/screenshots/Risk&Credit.png)
 
 ### Page 4 — Customer & Engagement
 
@@ -500,7 +508,9 @@ The dashboard has **four pages**, each connected directly to the `gold` schema i
 
 **Decisions it supports.** Digital strategy targeting, cross-selling opportunities, product mix optimization by age cohort.
 
-> Screenshots of each page are stored in `powerbi/screenshots/`. The full `.pbix` file is at `powerbi/dashboard.pbix`.
+![Page 4 — Customer & Engagement](powerbi/screenshots/Customer&Engagement.png)
+
+> The full `.pbix` file is at `powerbi/dashboard.pbix`.
 
 ---
 
