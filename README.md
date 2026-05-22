@@ -508,7 +508,7 @@ These are the most relevant findings drawn directly from the Gold layer. The dat
 
 ### Revenue & Transactions
 
-- **Mexico leads in total balance** ($649M USD), followed by Peru ($634M USD) and Brazil ($614M USD). After conversion to USD, all countries fall within a narrow $555M–$649M range — *making cross-country comparison meaningful for the first time*.
+- **Mexico leads in total balance** ($649M USD), followed by Peru ($634M USD) and Brazil ($614M USD). After conversion to USD, all countries fall within a narrow $555M–$649M range
 - Comparing balances in local currency would have been misleading. For example, COP has a much higher nominal value than BRL, so a direct comparison without conversion would have suggested Colombia dominates by orders of magnitude.
 - **The failed transaction rate is essentially uniform across channels** (~25% in all five channels), suggesting the failure mechanism is not channel-specific in this dataset.
 - **54% of transactions are international** — high cross-border activity is a defining characteristic of this customer base.
