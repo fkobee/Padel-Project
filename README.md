@@ -273,7 +273,7 @@ gold_dbt_transform
 
 Total runtime is approximately **2–4 minutes** on a typical laptop.
 
-### Step 6 — Inspect the Data
+### Step 6 (optional) — Inspect the Data
 
 ```bash
 docker compose exec postgres psql -U qversity-admin -d qversity
