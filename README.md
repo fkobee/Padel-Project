@@ -217,14 +217,24 @@ cd qversity-data-2026-montevideo-FrancoCaceres
 
 ### Step 2 — Configure Environment Variables
 
-The repository ships with `env.example`, which lists every variable the project needs (with empty values). Copy it to `.env` and populate the values:
+The repository ships with `env.example`. Copy it to `.env`:
 
-```bash
+\`\`\`bash
 cp env.example .env
-# Edit .env — populate the variables with your local values
-```
+\`\`\`
 
-Required variables include `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `S3_BUCKET`, `S3_KEY`, and Airflow configuration variables.
+All variables have working default values — no modification needed:
+
+| Variable | Value |
+|---|---|
+| `POSTGRES_USER` | `qversity-admin` |
+| `POSTGRES_PASSWORD` | `qversity-admin` |
+| `POSTGRES_DB` | `qversity` |
+| `DB_HOST` | `postgres` |
+| `S3_BUCKET` | `qversity-raw-public-data` |
+| `S3_KEY` | `fintech_banking_dataset.json` |
+
+Copy these values exactly — `docker-compose.yml` is configured to use them.
 
 ### Step 3 — Build and Start the Containers
 
