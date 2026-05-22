@@ -1,0 +1,462 @@
+# Qversity v2 — Fintech/Banking Data Engineering Project
+
+End-to-end ELT data pipeline for a fictional LATAM Fintech/Banking company. Ingests a raw JSON dataset from S3, transforms it through a Bronze/Silver/Gold lakehouse architecture, and exposes business insights via a PowerBI dashboard.
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#1-project-overview)
+2. [Participant](#2-participant)
+3. [Architecture](#3-architecture)
+4. [How to Run the Pipeline](#4-how-to-run-the-pipeline)
+5. [Technology Stack](#5-technology-stack)
+6. [Data Model (ERD)](#6-data-model-erd)
+7. [PySpark Logic](#7-pyspark-logic)
+8. [PowerBI Dashboard](#8-powerbi-dashboard)
+9. [Key Business Insights](#9-key-business-insights)
+10. [Design Decisions & Assumptions](#10-design-decisions--assumptions)
+11. [Repository Structure](#11-repository-structure)
+12. [Git Tags (Milestones)](#12-git-tags-milestones)
+
+---
+
+## 1. Project Overview
+
+### Business Context
+
+Qversity is a fictional Fintech/Banking company operating across seven LATAM countries: **Colombia, Uruguay, Argentina, Mexico, Chile, Peru, and Brazil**. The dataset contains ~5,000 customer records with nested arrays of accounts, transactions, and loans, plus credit and digital engagement information.
+
+### Goals
+
+The pipeline must:
+- Ingest a single raw JSON file from AWS S3
+- Implement a Bronze / Silver / Gold lakehouse architecture on PostgreSQL
+- Use Apache Airflow for orchestration
+- Use PySpark (inside Airflow container) for array flattening and deduplication
+- Use dbt for SQL transformations and data quality testing
+- Use PowerBI to expose insights via a 4-page dashboard
+- Run fully on Docker Compose
+- Be versioned and delivered via GitHub
+
+### High-level Flow
+
+```
+S3 (JSON) -> Airflow -> Bronze (jsonb) -> PySpark (Silver staging) -> dbt (Silver) -> dbt (Gold) -> PowerBI
+```
+
+---
+
+## 2. Participant
+
+| Field | Value |
+|---|---|
+| **Name** | Franco Caceres Miguel |
+| **Email** | francobi28@hotmail.com |
+| **City** | Montevideo |
+| **Cohort** | Qversity 2026 |
+
+---
+
+## 3. Architecture
+
+### Layered ELT Design
+
+```
+S3 (fintech_banking_dataset.json)
+  |
+  v
+Apache Airflow (DAG)
+  |
+  v
+BRONZE (PostgreSQL, schema=bronze)
+  - Raw JSON as jsonb + ingestion metadata
+  |
+  +-------------> PySpark (inside Airflow container)
+  |                  - Flatten nested arrays
+  |                  - Deduplicate by primary keys
+  |                  - Normalize date formats
+  |                  - Write staging to schema=silver
+  |
+  v
+dbt (PostgreSQL)
+  - Silver models: clean, standardize, translate ES->EN, convert to USD
+  - Gold models: analytics tables per business question
+  |
+  v
+GOLD (PostgreSQL, schema=gold)
+  |
+  v
+PowerBI Desktop
+  - 4-page dashboard on top of gold schema
+```
+
+### Layer Responsibilities
+
+| Layer | Tool | Responsibility |
+|---|---|---|
+| **Bronze** | Airflow + PostgreSQL | Persist raw JSON faithfully as `jsonb` |
+| **Silver (staging)** | PySpark | Flatten arrays, dedup, normalize dates |
+| **Silver (cleaned)** | dbt | Cleaning, standardization, ES->EN translation, USD conversion, dimensional modeling |
+| **Gold** | dbt | Analytics-ready tables aligned with business questions |
+| **Dashboard** | PowerBI | 4-page visualization |
+
+---
+
+## 4. How to Run the Pipeline
+
+### Prerequisites
+
+- **Docker Desktop** running
+- **Git** installed
+- **PowerBI Desktop** (only for dashboard viewing)
+- At least 4 GB RAM available
+
+### Setup
+
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd qversity-data-2026-montevideo-FrancoCaceres
+
+# 2. Copy and populate the environment file
+cp env.example .env
+# Edit .env with your local values (see env.example for required variables)
+
+# 3. Build and start the containers
+docker compose up -d --build
+```
+
+The build takes a few minutes the first time (Java + PySpark + dbt + JDBC driver).
+
+### Verify
+
+```bash
+docker compose ps
+```
+
+All three services (`postgres`, `airflow`, `dbt`) must be `Up` and `healthy`.
+
+### Run the Pipeline
+
+1. Open Airflow UI: **http://localhost:8080** (admin / admin)
+2. Activate the DAG `qversity_fintech_pipeline` (toggle on the left)
+3. Trigger it with the play button
+
+The DAG runs the four tasks sequentially:
+```
+bronze_ingest_from_s3 -> silver_flatten_pyspark -> silver_dbt_transform -> gold_dbt_transform
+```
+
+### Access PostgreSQL
+
+```bash
+docker compose exec postgres psql -U qversity-admin -d qversity
+
+# Useful commands inside psql:
+\dn               -- list schemas
+\dt bronze.*      -- list bronze tables
+\dt silver.*      -- list silver tables
+\dt gold.*        -- list gold tables
+```
+
+### Connect PowerBI to PostgreSQL
+
+- **Server:** `localhost:5432`
+- **Database:** `qversity`
+- **Schema:** `gold`
+- **Credentials:** `qversity-admin / qversity-admin`
+
+---
+
+## 5. Technology Stack
+
+| Tool | Version | Role |
+|---|---|---|
+| Docker & Docker Compose | latest | Containerization |
+| PostgreSQL | 15 | Warehouse with bronze/silver/gold schemas |
+| Apache Airflow | 2.7.3 | Orchestration |
+| PySpark | 3.5.0 | Array flattening, deduplication, JDBC I/O |
+| dbt-core + dbt-postgres | 1.7.0 | SQL transformations and testing |
+| PowerBI Desktop | latest | Dashboards and data visualization |
+| Python | 3.11 | DAGs, Spark scripts |
+| Java (OpenJDK) | 11 | Required by PySpark JVM |
+| PostgreSQL JDBC Driver | 42.7.2 | PySpark <-> PostgreSQL communication |
+| GitHub | - | Source control and submission |
+
+---
+
+## 6. Data Model (ERD)
+
+The pipeline produces a relational model in Silver and analytics tables in Gold.
+
+![ERD Diagram](docs/erd.png)
+
+### Silver — Dimensions
+
+**`silver.dim_customers`** (5,000 rows) — One row per customer.
+- Personal info: name, email, phone, date_of_birth, gender, nationality
+- Geography: country, city, lat, lon
+- Derived: `age`, `age_bucket`, `tenure_months`, `risk_bucket`, `credit_score_bucket`
+- Segmentation: `customer_segment`, `kyc_status`, `status`, `risk_score`
+- Credit info: `credit_score`, `utilization_pct`, `total_limit`, `late_payments_12m`
+- Digital engagement: `mobile_app_registered`, `preferred_channel`, `last_login_date`
+
+**`silver.dim_accounts`** (17,529 rows) — One row per account.
+- `account_id`, `customer_id`, `account_type`, `currency`
+- `balance_local`, `balance_usd`, `credit_limit_local`, `credit_limit_usd`
+- `interest_rate`, `opened_date`, `status`, `branch_code`
+
+### Silver — Facts
+
+**`silver.fct_transactions`** (~85,000 rows) — One row per transaction.
+- `transaction_id`, `customer_id`, `account_id`, `transaction_date`
+- `amount_local`, `amount_usd`, `currency`, `transaction_type`, `category`, `channel`
+- Flags: `is_failed`, `is_international`
+- Derived: `day_of_week`, `month_num`, `year_num`
+
+**`silver.fct_loans`** (7,663 rows) — One row per loan.
+- `loan_id`, `customer_id`, `loan_type`, `currency`
+- `principal_usd`, `outstanding_balance_usd`, `interest_rate`, `term_months`
+- `loan_status`, `days_past_due`, `dpd_bucket`, `is_delinquent`
+
+### Gold — Analytics Tables
+
+Each Gold table is built to answer a specific dashboard page.
+
+| Table | Grain | Purpose |
+|---|---|---|
+| `gold_executive_overview` | One row per customer | KPIs, AUM, acquisition trend |
+| `gold_revenue_transactions` | One row per transaction | Revenue, channels, categories |
+| `gold_risk_credit` | One row per loan | Risk, delinquency, credit scoring |
+| `gold_customer_engagement` | One row per account | Demographics, digital adoption |
+
+---
+
+## 7. PySpark Logic
+
+The script `spark/flatten_bronze.py` runs inside the Airflow container and performs:
+
+### Reading Bronze
+
+Uses JDBC to read `bronze.raw_fintech_data`, then parses the `data` JSONB column into a typed structure using an explicit schema (`get_bronze_schema()`).
+
+### Flattening Arrays
+
+| Source array | Output table | Result |
+|---|---|---|
+| `accounts[]` | `silver.stg_accounts` | 17,529 rows |
+| `transactions[]` | `silver.stg_transactions` | 85,067 rows |
+| `loans[]` | `silver.stg_loans` | 7,663 rows |
+
+Flat fields, `credit_info{}`, and `digital_engagement{}` are merged into `silver.stg_customers` (5,000 rows).
+
+### Deduplication
+
+A window function partitions by the primary key (`customer_id`, `account_id`, `transaction_id`, `loan_id`) and keeps the first occurrence per group. Since Bronze is truncated before each ingestion and the source JSON is a static snapshot, dedup is a safety net rather than a substantive operation.
+
+### Date Normalization
+
+The dataset contains three mixed date formats: `YYYY-MM-DD`, `DD/MM/YYYY`, and `YYYYMMDD`. PySpark detects the format with regex and converts everything to a standard `DATE` type before writing to Silver.
+
+### Writing Silver
+
+Each DataFrame is written to PostgreSQL via JDBC in `overwrite` mode for idempotency.
+
+---
+
+## 8. PowerBI Dashboard
+
+The dashboard has 4 pages connected directly to the `gold` schema. Each page has slicers for `country`, `customer_segment`, and other relevant dimensions.
+
+### Page 1 — Executive Overview
+
+**What it shows:** High-level KPIs — total customers, AUM, active customers, KYC verified rate, customer count by country, monthly acquisition trend, status and KYC distribution, average revenue per segment.
+
+**Business questions answered:** Q1, Q10, Q12, Q13, Q14.
+
+**Decisions it supports:** Strategic overview of the customer base health, acquisition cadence, and segment value.
+
+### Page 2 — Revenue & Transactions
+
+**What it shows:** Transaction volume and value by category (combined chart), transaction count by day of week, average size and revenue by channel, failed rate by channel, international vs local patterns by country, total account balance by country (in USD).
+
+**Business questions answered:** Q2, Q3, Q15, Q16, Q17, Q18, Q19.
+
+**Decisions it supports:** Channel investment priorities, category-level revenue analysis, identification of failure hotspots.
+
+### Page 3 — Risk & Credit
+
+**What it shows:** Delinquency rate by segment, credit score distribution by country, utilization vs delinquency scatter, days past due by loan type, loan portfolio composition (outstanding USD by type and status), interest income by loan type, customer risk segmentation.
+
+**Business questions answered:** Q4, Q5, Q6, Q7, Q8, Q9, Q23.
+
+**Decisions it supports:** Credit risk policy adjustment, portfolio rebalancing, identification of delinquency drivers.
+
+### Page 4 — Customer & Engagement
+
+**What it shows:** Age distribution by segment, mobile app adoption rate by segment, digital vs physical channel preference by age group, account type distribution, average number of products per customer by segment.
+
+**Business questions answered:** Q11, Q20, Q21, Q22, Q24.
+
+**Decisions it supports:** Digital strategy targeting, cross-selling opportunities, product mix optimization.
+
+Screenshots are stored in `powerbi/screenshots/`.
+
+---
+
+## 9. Key Business Insights
+
+### Customer base
+- **5,000 customers** distributed across 7 LATAM countries, with **AUM of ~$4,259M USD**.
+- Country distribution is balanced (~700 customers per country, range 666–737).
+- Customer status is also evenly split: ~25% in each of active, inactive, suspended, closed.
+
+### Revenue & transactions
+- **MX leads in total balance** (~$649M USD), followed by PE (~$634M USD) and BR (~$614M USD).
+- Total balance differences across countries are now meaningful thanks to USD conversion — comparison in local currency would have been distorted by nominal scale (e.g. COP vs BRL).
+- **Failed transaction rate is uniform** across channels (~25% in all channels), suggesting the failure mechanism is not channel-specific in this dataset.
+- **54% of transactions are international** — high cross-border activity is a defining feature.
+
+### Risk & credit
+- **Delinquency rate is ~50% across all segments** — there is no meaningful differentiation between retail, premium, private banking, and SME. This is a hallmark of the synthetic dataset and would warrant investigation in a real scenario.
+- **`poor` credit score is the dominant bucket** (1,733 customers, ~35%), with `unknown` (389) reflecting customers whose `credit_score` was outside the valid 300–850 range and was set to NULL.
+
+### Customer engagement
+- **`mobile` is the most popular channel** (1,058 customers), but the distribution across all 5 channels is fairly even.
+- **Mobile adoption is ~50% in every segment** — no segment-driven digital adoption pattern.
+- The **55+ age bucket is the largest** (~2,033 customers) because it's open-ended; the other buckets cover 10-year spans.
+
+---
+
+## 10. Design Decisions & Assumptions
+
+These are the non-obvious decisions made during the project, with justification.
+
+### Bronze Layer
+
+| Decision | Justification |
+|---|---|
+| `TRUNCATE` before each insert | Guarantees idempotency. The DAG can be re-run safely. Acceptable because the source is a static snapshot. |
+| Store as `jsonb` (not parsed) | Preserve the raw source faithfully. If logic changes later, no need to re-fetch from S3. |
+| `bronze.raw_fintech_data(id, data, load_timestamp)` | Minimal schema: surrogate key, raw payload, ingestion timestamp. |
+
+### Silver — PySpark
+
+| Decision | Justification |
+|---|---|
+| Deduplication by first occurrence ordered by primary key | Conservative and deterministic. Safe given Bronze truncation. |
+| Mixed date format detection in PySpark | Source contains `YYYY-MM-DD`, `DD/MM/YYYY`, and `YYYYMMDD`. Centralizing this in PySpark keeps Silver dbt models clean. |
+| `overwrite` mode for Silver staging writes | Same idempotency rationale as Bronze. |
+| Explicit schema (not inferred) | More robust and predictable than schema inference. |
+
+### Silver — dbt
+
+| Decision | Justification |
+|---|---|
+| Conversion to USD using fixed FX rates | Local currencies are not directly comparable (COP nominal value != BRL). Confirmed with instructors. Local values are kept alongside USD for traceability. FX rates used: COP 4000, UYU 40, ARS 1000, MXN 17, CLP 950, PEN 3.8, BRL 5, EUR 0.92 (approx 2024–2025). |
+| Spanish -> English translation for `status`, `customer_segment`, `transaction_type` | Source contains mixed-language categorical values. Standardized to English. |
+| `TRIM()` on categorical fields | Source values contain leading/trailing whitespace that broke `accepted_values` tests. |
+| `is_international` based on customer's country currency | A Uruguayan paying in ARS is an international transaction. Implemented via join with `dim_customers` and country->currency mapping. Confirmed with instructor @serasio. |
+| `phone` classified as digital channel | Confirmed with instructor (in Slack). |
+| `credit_score` outside 300–850 -> NULL | EDA detected 515 corrupt values (range -99 to 999999). Range comes from the project specification. Treated as `unknown` in the bucket. |
+| `is_delinquent` = status in (delinquent, default) OR `days_past_due > 0` | Captures both status-based and aging-based delinquency. |
+| Macro `generate_schema_name` | dbt's default behavior concatenates `target.schema` with the model's `schema` config (producing `public_silver` instead of `silver`). The macro overrides this to use the model's schema directly. |
+
+### Gold — dbt
+
+| Decision | Justification |
+|---|---|
+| One Gold table per dashboard page | Clear grain, easy to maintain, aligned with consumer needs. |
+| `interest_income = outstanding_balance * interest_rate` | Confirmed assumption with instructor: loans are assumed to run to `end_date` (no early payoff), so this approximates yearly interest income. |
+| `total_products` = accounts + loans per customer | Sum of all customer-held products across both tables. |
+
+### Data Quality (EDA Findings)
+
+| Finding | Treatment |
+|---|---|
+| 515 customers with `credit_score` outside [300, 850] | Set to NULL; bucket = `'unknown'` |
+| 298 customers with `registration_date` NULL | Kept (not dropped); excluded from temporal aggregations naturally |
+| 5,320 transactions with NULL `transaction_date` | Kept; visually filtered in PowerBI |
+| Categorical fields with leading/trailing whitespace | `TRIM()` applied across all categorical columns |
+| Mixed Spanish/English categorical values | Translated to English in Silver dbt |
+| Three mixed date formats | Normalized in PySpark |
+| `EUR` currency present in some transactions | Added to FX rate table (0.92) |
+| `mobile_app_registered` uniformly ~50% across segments | Documented as a dataset characteristic, not a modeling issue |
+
+### Infrastructure
+
+| Decision | Justification |
+|---|---|
+| Custom Dockerfile on top of `apache/airflow:2.7.3-python3.11` | The base image does not include Java, which PySpark requires. We add OpenJDK 11 and the required Python packages while keeping the exact Airflow version mandated by the project. |
+| `spark.jars.packages` for PostgreSQL JDBC | Spark downloads the driver from Maven Central at runtime instead of bundling it in the Dockerfile. Cleaner image, no vendored JARs in the repo. |
+| `LocalExecutor` for Airflow | More efficient than `SequentialExecutor` for the multi-task DAG. |
+| Schedule = `None` (manual trigger) | The pipeline runs against a static snapshot; no scheduling required. |
+
+### Tests Implemented (34 total)
+
+- **Uniqueness:** `customer_id`, `account_id`, `transaction_id`, `loan_id`
+- **Not null:** all primary keys and key fields (email, country, amount_usd, etc.)
+- **Accepted values:** statuses, segments, channels, transaction types, loan types, risk and credit score buckets
+- **Referential integrity:** accounts->customers, transactions->customers, transactions->accounts, loans->customers
+- **Custom singular tests:**
+  - `assert_days_past_due_non_negative`: ensures `days_past_due >= 0`
+  - `assert_transaction_amount_positive`: ensures `amount_usd > 0`
+  - `test_credit_score_range`: ensures credit scores fall within [300, 850] after NULL treatment
+
+---
+
+## 11. Repository Structure
+
+```
+qversity-data-2026-montevideo-FrancoCaceres/
+├── docker-compose.yml          # Multi-container setup (postgres, airflow, dbt)
+├── Dockerfile                  # Custom Airflow image with Java + PySpark deps
+├── env.example                 # Template for required environment variables
+├── requirements.txt            # Python dependencies
+├── README.md                   # This file
+├── .gitignore                  # Excludes .env, logs, __pycache__, etc.
+├── dags/
+│   └── qversity-dag.py         # Main Airflow DAG (Bronze -> Silver -> Gold)
+├── spark/
+│   └── flatten_bronze.py       # PySpark Silver staging job
+├── dbt/
+│   ├── dbt_project.yml         # dbt project config
+│   ├── profiles.yml            # PostgreSQL connection profile
+│   ├── macros/
+│   │   └── generate_schema_name.sql   # Custom schema name resolver
+│   ├── models/
+│   │   ├── bronze/             # Bronze passthrough model
+│   │   ├── silver/             # 4 cleaned dims & facts + schema.yml tests
+│   │   └── gold/               # 4 analytics models + schema.yml
+│   └── tests/                  # Custom singular tests
+├── powerbi/
+│   ├── dashboard.pbix          # PowerBI dashboard file
+│   └── screenshots/            # One screenshot per dashboard page
+├── data/
+│   └── raw/                    # Local copy of the source JSON (gitignored)
+└── docs/
+    └── erd.png                 # Entity-Relationship Diagram
+```
+
+---
+
+## 12. Git Tags (Milestones)
+
+| Tag | Milestone |
+|---|---|
+| `v0.1.0-bronze` | Bronze layer complete (5,100 records ingested from S3) |
+| `v0.2.0-silver` | Silver layer complete (PySpark + dbt, 34 tests passing) |
+| `v0.3.0-gold` | Gold layer complete (4 analytics models answering all 24 questions) |
+| `v0.4.0-powerbi` | PowerBI dashboard ready (4 pages, screenshots committed) |
+| `v1.0.0` | Final submission |
+
+To list tags:
+```bash
+git tag -l
+```
+
+To check out a specific milestone:
+```bash
+git checkout v0.2.0-silver
+```
